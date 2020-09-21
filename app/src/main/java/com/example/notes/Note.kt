@@ -1,8 +1,8 @@
 package com.example.notes
 
-import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+
 @Entity(tableName = "notes_table")
 data class Note(
     var title: String,

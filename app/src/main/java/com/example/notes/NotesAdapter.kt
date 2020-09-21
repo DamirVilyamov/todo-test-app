@@ -35,7 +35,6 @@ class NotesAdapter : ListAdapter<Note, NotesAdapter.NoteHolder>(DIFF_CALLBACK) {
             itemView.setOnClickListener {
                 val editNoteIntent = Intent(itemView.context, AddEditNoteActivity::class.java)
                 editNoteIntent.putExtra("MODE", IntentCodes.INFO)
-                editNoteIntent.putExtra("ID", currentNote.id)
                 editNoteIntent.putExtra("TITLE", currentNote.title)
                 editNoteIntent.putExtra("DESCRIPTION", currentNote.description)
                 editNoteIntent.putExtra("IMAGE", currentNote.imageUri)

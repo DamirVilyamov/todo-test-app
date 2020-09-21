@@ -1,7 +1,6 @@
 package com.example.notes
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
@@ -15,21 +14,20 @@ import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.activity_add_edit_note.*
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class AddEditNoteActivity : AppCompatActivity() {
     private lateinit var noteViewModel: NoteViewModel
     private lateinit var currentNote: Note
-    private var MODE: Int = -1
-    private var isInEditMode = false
+    private var MODE: Int = -1 //needed to edit or just show the info
+    private var isInEditMode = false //needed to edit or just show the info
     private val TAG = "!@#"
 
     var title: String? = ""
     var description: String? = ""
     var createdDate: String? = ""
     var updatedDate: String? = ""
-    var id:Int? = null
+    var id: Int? = null
     var uri: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,21 +40,24 @@ class AddEditNoteActivity : AppCompatActivity() {
             val intent = Intent()
             intent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT
-            startActivityForResult(Intent.createChooser(intent, "Select Picture"), IntentCodes.SELECT_PICTURE)
+            startActivityForResult(
+                Intent.createChooser(intent, "Select Picture"),
+                IntentCodes.SELECT_PICTURE
+            )
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK){
-            if (requestCode == IntentCodes.SELECT_PICTURE){
+        if (resultCode == RESULT_OK) {
+            if (requestCode == IntentCodes.SELECT_PICTURE) {
                 uri = data?.data.toString()
                 note_image.setImageURI(uri?.toUri())
             }
         }
     }
 
-    private fun processIntent() {
+    private fun processIntent() {//getting all the info about the note
         MODE = intent.getIntExtra("MODE", 0)
         Log.d(TAG, "processIntent: MODE = $MODE")
 
@@ -79,7 +80,7 @@ class AddEditNoteActivity : AppCompatActivity() {
         }
     }
 
-    private fun displayNoteInfo(note: Note){
+    private fun displayNoteInfo(note: Note) {
         edit_text_title.setText(note.title, TextView.BufferType.EDITABLE)
         edit_text_description.setText(note.description, TextView.BufferType.EDITABLE)
         text_view_created.text = "Created: " + note.createdDate
@@ -87,7 +88,6 @@ class AddEditNoteActivity : AppCompatActivity() {
         Log.d(TAG, "displayNoteInfo: showing image: ${note.imageUri}")
         note_image.setImageURI(note.imageUri?.toUri())
     }
-
 
 
     private fun getCurrentDate(): String {
@@ -147,12 +147,10 @@ class AddEditNoteActivity : AppCompatActivity() {
         } else {
             updatedDate = getCurrentDate()
         }
-        val note = Note(title!!, description!!,/* imagesList!!,*/ createdDate!!, updatedDate!!, uri)
+        val note = Note(title!!, description!!, createdDate!!, updatedDate!!, uri)
         note.id = id
-
-        Log.d(TAG, "getNote: $note")
+        Log.d(TAG, "getNote: $note.id $note")
         return note
-
     }
 
 }

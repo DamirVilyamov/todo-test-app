@@ -1,6 +1,6 @@
 package com.example.notes
 
-class IntentCodes {
+class IntentCodes {//just a data class for constants
 
    companion object{
        val INFO:Int = 1
