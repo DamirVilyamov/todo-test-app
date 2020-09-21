@@ -1,7 +1,6 @@
 package com.example.notes
 
 import android.os.Bundle
-import android.text.Editable
 import android.text.InputType
 import android.util.Log
 import android.view.Menu
@@ -122,6 +121,7 @@ class AddEditNoteActivity : AppCompatActivity() {
             updatedDate = getCurrentDate()
         }
         val note = Note(title!!, description!!,/* imagesList!!,*/ createdDate!!, updatedDate!!)
+        note.id = id!!
         Log.d(TAG, "getNote: $note")
         return note
 
