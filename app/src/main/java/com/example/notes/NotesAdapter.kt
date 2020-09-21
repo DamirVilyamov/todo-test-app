@@ -35,9 +35,9 @@ class NotesAdapter : ListAdapter<Note, NotesAdapter.NoteHolder>(DIFF_CALLBACK) {
             itemView.setOnClickListener {
                 val editNoteIntent = Intent(itemView.context, AddEditNoteActivity::class.java)
                 editNoteIntent.putExtra("MODE", IntentCodes.INFO)
-                editNoteIntent.putExtra("ID", currentNote.getID())
+                editNoteIntent.putExtra("ID", currentNote.id)
                 editNoteIntent.putExtra("TITLE", currentNote.title)
-                editNoteIntent.putExtra("DESCRIPTION", currentNote.title)
+                editNoteIntent.putExtra("DESCRIPTION", currentNote.description)
                     //editNoteIntent.putExtra("IMAGES", currentNote.imagesList)
                 editNoteIntent.putExtra("CREATED_DATE", currentNote.createdDate)
                 editNoteIntent.putExtra("UPDATED_DATE", currentNote.updatedDate)

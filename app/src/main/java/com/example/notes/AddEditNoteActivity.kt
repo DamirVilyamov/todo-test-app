@@ -27,7 +27,7 @@ class AddEditNoteActivity : AppCompatActivity() {
     var imagesList: ArrayList<String>? = ArrayList()
     var createdDate: String? = ""
     var updatedDate: String? = ""
-    var id = -1
+    var id:Int? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_edit_note)
@@ -51,7 +51,7 @@ class AddEditNoteActivity : AppCompatActivity() {
                 imagesList = intent.getStringArrayListExtra("IMAGES")
                 id = intent.getIntExtra("ID", -1)
                 currentNote = Note(title!!, description!!, createdDate!!, updatedDate!!)
-                currentNote.id = id
+                currentNote.id = id!!
                 printNoteInfo(currentNote)
             }
         }
@@ -98,9 +98,11 @@ class AddEditNoteActivity : AppCompatActivity() {
                 currentNote = getNote()
                 Log.d(TAG, "onOptionsItemSelected: MODE = $MODE")
                 if (MODE == IntentCodes.ADD) {
+                    Log.d(TAG, "onOptionsItemSelected: inserting new note ${currentNote.id}")
                     noteViewModel.insert(currentNote)
                 } else if (MODE == IntentCodes.INFO) {
                     noteViewModel.update(currentNote)
+                    Log.d(TAG, "onOptionsItemSelected: updating note ${currentNote.id} ")
                 }
                 activateEditMode(false)
                 Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show()

@@ -10,7 +10,7 @@ data class Note(
     var updatedDate: String
 ){
     @PrimaryKey(autoGenerate = true)
-    var id:Int = -1
+    var id:Int = 0
 
     fun getID(): Int {
         return id
