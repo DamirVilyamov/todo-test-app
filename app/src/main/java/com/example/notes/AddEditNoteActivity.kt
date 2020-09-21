@@ -1,5 +1,7 @@
 package com.example.notes
 
+import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
@@ -8,11 +10,13 @@ import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.activity_add_edit_note.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 class AddEditNoteActivity : AppCompatActivity() {
     private lateinit var noteViewModel: NoteViewModel
@@ -23,21 +27,39 @@ class AddEditNoteActivity : AppCompatActivity() {
 
     var title: String? = ""
     var description: String? = ""
-    var imagesList: ArrayList<String>? = ArrayList()
     var createdDate: String? = ""
     var updatedDate: String? = ""
     var id:Int? = null
+    var uri: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_edit_note)
         noteViewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
+        activateEditMode(false)
         processIntent()
+
+        button_pick_image.setOnClickListener {
+            val intent = Intent()
+            intent.type = "image/*"
+            intent.action = Intent.ACTION_GET_CONTENT
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), IntentCodes.SELECT_PICTURE)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK){
+            if (requestCode == IntentCodes.SELECT_PICTURE){
+                uri = data?.data.toString()
+                note_image.setImageURI(uri?.toUri())
+            }
+        }
     }
 
     private fun processIntent() {
         MODE = intent.getIntExtra("MODE", 0)
         Log.d(TAG, "processIntent: MODE = $MODE")
-        activateEditMode(false)
+
         when (MODE) {
             IntentCodes.ADD -> {
 
@@ -47,20 +69,23 @@ class AddEditNoteActivity : AppCompatActivity() {
                 description = intent.getStringExtra("DESCRIPTION")
                 createdDate = intent.getStringExtra("CREATED_DATE")
                 updatedDate = intent.getStringExtra("UPDATED_DATE")
-                imagesList = intent.getStringArrayListExtra("IMAGES")
+                uri = intent.getStringExtra("IMAGE")
                 id = intent.getIntExtra("ID", -1)
-                currentNote = Note(title!!, description!!, createdDate!!, updatedDate!!)
-                currentNote.id = id!!
-                printNoteInfo(currentNote)
+                currentNote = Note(title!!, description!!, createdDate!!, updatedDate!!, uri)
+                currentNote.id = id
+                Log.d(TAG, "processIntent: got from intents: id $currentNote.id $currentNote")
+                displayNoteInfo(currentNote)
             }
         }
     }
 
-    private fun printNoteInfo(note: Note){
+    private fun displayNoteInfo(note: Note){
         edit_text_title.setText(note.title, TextView.BufferType.EDITABLE)
         edit_text_description.setText(note.description, TextView.BufferType.EDITABLE)
         text_view_created.text = "Created: " + note.createdDate
         text_view_updated.text = "Updated: " + note.updatedDate
+        Log.d(TAG, "displayNoteInfo: showing image: ${note.imageUri}")
+        note_image.setImageURI(note.imageUri?.toUri())
     }
 
 
@@ -81,9 +106,11 @@ class AddEditNoteActivity : AppCompatActivity() {
         if (isActive) {
             edit_text_description.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
             edit_text_title.inputType = InputType.TYPE_CLASS_TEXT
+            button_pick_image.isEnabled = isActive
         } else {
             edit_text_description.inputType = InputType.TYPE_NULL
             edit_text_title.inputType = InputType.TYPE_NULL
+            button_pick_image.isEnabled = isActive
         }
     }
 
@@ -120,8 +147,9 @@ class AddEditNoteActivity : AppCompatActivity() {
         } else {
             updatedDate = getCurrentDate()
         }
-        val note = Note(title!!, description!!,/* imagesList!!,*/ createdDate!!, updatedDate!!)
-        note.id = id!!
+        val note = Note(title!!, description!!,/* imagesList!!,*/ createdDate!!, updatedDate!!, uri)
+        note.id = id
+
         Log.d(TAG, "getNote: $note")
         return note
 

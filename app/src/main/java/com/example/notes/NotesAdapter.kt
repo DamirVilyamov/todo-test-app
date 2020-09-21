@@ -16,7 +16,7 @@ class NotesAdapter : ListAdapter<Note, NotesAdapter.NoteHolder>(DIFF_CALLBACK) {
         val DIFF_CALLBACK: DiffUtil.ItemCallback<Note> =
             object : DiffUtil.ItemCallback<Note>() {
                 override fun areItemsTheSame(oldItem: Note, newItem: Note): Boolean {
-                    return oldItem.getID() == newItem.getID()
+                    return oldItem.id == newItem.id
                 }
 
                 override fun areContentsTheSame(oldItem: Note, newItem: Note): Boolean {
@@ -38,13 +38,14 @@ class NotesAdapter : ListAdapter<Note, NotesAdapter.NoteHolder>(DIFF_CALLBACK) {
                 editNoteIntent.putExtra("ID", currentNote.id)
                 editNoteIntent.putExtra("TITLE", currentNote.title)
                 editNoteIntent.putExtra("DESCRIPTION", currentNote.description)
-                    //editNoteIntent.putExtra("IMAGES", currentNote.imagesList)
+                editNoteIntent.putExtra("IMAGE", currentNote.imageUri)
                 editNoteIntent.putExtra("CREATED_DATE", currentNote.createdDate)
                 editNoteIntent.putExtra("UPDATED_DATE", currentNote.updatedDate)
                 editNoteIntent.putExtra("ID", currentNote.id)
 
                 itemView.context.startActivity(editNoteIntent)
             }
+
         }
     }
 
