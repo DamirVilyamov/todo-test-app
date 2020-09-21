@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Notes</string>
-    <string name="created_date_default">Was created: 20/09/2020</string>
-    <string name="updated_date_default">Was updated: 20/09/2020</string>
+    <string name="created_date_default"> </string>
+    <string name="updated_date_default"> </string>
 </resources>

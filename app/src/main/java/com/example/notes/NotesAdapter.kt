@@ -38,9 +38,10 @@ class NotesAdapter : ListAdapter<Note, NotesAdapter.NoteHolder>(DIFF_CALLBACK) {
                 editNoteIntent.putExtra("ID", currentNote.getID())
                 editNoteIntent.putExtra("TITLE", currentNote.title)
                 editNoteIntent.putExtra("DESCRIPTION", currentNote.title)
-                editNoteIntent.putExtra("IMAGES", currentNote.imagesList)
+                    //editNoteIntent.putExtra("IMAGES", currentNote.imagesList)
                 editNoteIntent.putExtra("CREATED_DATE", currentNote.createdDate)
                 editNoteIntent.putExtra("UPDATED_DATE", currentNote.updatedDate)
+                editNoteIntent.putExtra("ID", currentNote.id)
 
                 itemView.context.startActivity(editNoteIntent)
             }

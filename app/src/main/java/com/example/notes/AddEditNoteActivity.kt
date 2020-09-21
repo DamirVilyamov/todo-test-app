@@ -1,9 +1,12 @@
 package com.example.notes
 
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputType
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -17,13 +20,14 @@ class AddEditNoteActivity : AppCompatActivity() {
     private lateinit var currentNote: Note
     private var MODE: Int = -1
     private var isInEditMode = false
+    private val TAG = "!@#"
 
     var title: String? = ""
     var description: String? = ""
-    var imagesList:ArrayList<String>? = ArrayList()
-    var createdDate:String? = ""
-    var updatedDate:String? = ""
-
+    var imagesList: ArrayList<String>? = ArrayList()
+    var createdDate: String? = ""
+    var updatedDate: String? = ""
+    var id = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_edit_note)
@@ -33,6 +37,8 @@ class AddEditNoteActivity : AppCompatActivity() {
 
     private fun processIntent() {
         MODE = intent.getIntExtra("MODE", 0)
+        Log.d(TAG, "processIntent: MODE = $MODE")
+        activateEditMode(false)
         when (MODE) {
             IntentCodes.ADD -> {
 
@@ -43,9 +49,22 @@ class AddEditNoteActivity : AppCompatActivity() {
                 createdDate = intent.getStringExtra("CREATED_DATE")
                 updatedDate = intent.getStringExtra("UPDATED_DATE")
                 imagesList = intent.getStringArrayListExtra("IMAGES")
+                id = intent.getIntExtra("ID", -1)
+                currentNote = Note(title!!, description!!, createdDate!!, updatedDate!!)
+                currentNote.id = id
+                printNoteInfo(currentNote)
             }
         }
     }
+
+    private fun printNoteInfo(note: Note){
+        edit_text_title.setText(note.title, TextView.BufferType.EDITABLE)
+        edit_text_description.setText(note.description, TextView.BufferType.EDITABLE)
+        text_view_created.text = "Created: " + note.createdDate
+        text_view_updated.text = "Updated: " + note.updatedDate
+    }
+
+
 
     private fun getCurrentDate(): String {
         val currentDate: String = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
@@ -58,9 +77,9 @@ class AddEditNoteActivity : AppCompatActivity() {
         return true;
     }
 
-    private fun activateEditMode(active: Boolean) {
-        isInEditMode = active
-        if (active) {
+    private fun activateEditMode(isActive: Boolean) {
+        isInEditMode = isActive
+        if (isActive) {
             edit_text_description.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
             edit_text_title.inputType = InputType.TYPE_CLASS_TEXT
         } else {
@@ -77,6 +96,7 @@ class AddEditNoteActivity : AppCompatActivity() {
             }
             R.id.save_note -> {
                 currentNote = getNote()
+                Log.d(TAG, "onOptionsItemSelected: MODE = $MODE")
                 if (MODE == IntentCodes.ADD) {
                     noteViewModel.insert(currentNote)
                 } else if (MODE == IntentCodes.INFO) {
@@ -99,8 +119,9 @@ class AddEditNoteActivity : AppCompatActivity() {
         } else {
             updatedDate = getCurrentDate()
         }
-
-        return Note(title!!, description!!, imagesList!!, createdDate!!, updatedDate!!)
+        val note = Note(title!!, description!!,/* imagesList!!,*/ createdDate!!, updatedDate!!)
+        Log.d(TAG, "getNote: $note")
+        return note
 
     }
 
