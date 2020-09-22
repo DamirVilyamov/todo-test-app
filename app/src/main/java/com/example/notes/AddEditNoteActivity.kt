@@ -48,6 +48,7 @@ class AddEditNoteActivity : AppCompatActivity() {
                 Intent.createChooser(intent, "Select Picture"),
                 IntentCodes.SELECT_PICTURE
             )
+
         }
     }
 
@@ -56,7 +57,7 @@ class AddEditNoteActivity : AppCompatActivity() {
         if (resultCode == RESULT_OK) {
             if (requestCode == IntentCodes.SELECT_PICTURE) {
                 uri = data?.data.toString()
-                note_image.setImageURI(uri?.toUri())
+                Glide.with(this).load(uri).into(note_image)
             }
         }
     }
@@ -93,14 +94,6 @@ class AddEditNoteActivity : AppCompatActivity() {
         text_view_updated.text = "Updated: " + note.updatedDate
         Log.d(TAG, "displayNoteInfo: showing image: ${note.imageUri?.toUri()}")
         //note_image.setImageURI(note.imageUri?.toUri())
-
-        /*try {
-            val inputStream = contentResolver.openInputStream(note.imageUri!!.toUri())
-            val drawable = Drawable.createFromStream(inputStream, null)
-            note_image.setImageDrawable(drawable)
-        } catch (exception: FileNotFoundException){
-            Log.d(TAG, "displayNoteInfo: file not found")
-        }*/
 
         Glide.with(this).load(uri).into(note_image)
     }
