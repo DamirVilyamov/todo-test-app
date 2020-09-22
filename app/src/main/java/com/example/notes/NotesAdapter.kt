@@ -1,18 +1,21 @@
 package com.example.notes
 
 import android.content.Intent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.TextView
+import androidx.appcompat.view.menu.MenuItemImpl
+import androidx.appcompat.view.menu.MenuView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.note_item.view.*
 
 
-class NotesAdapter : ListAdapter<Note, NotesAdapter.NoteHolder>(DIFF_CALLBACK) {
+class NotesAdapter(var onNoteListener: OnNoteListener) :
+    ListAdapter<Note, NotesAdapter.NoteHolder>(DIFF_CALLBACK) {
 
     companion object {
+        var checkboxesVisible = false
         val DIFF_CALLBACK: DiffUtil.ItemCallback<Note> =
             object : DiffUtil.ItemCallback<Note>() {
                 override fun areItemsTheSame(oldItem: Note, newItem: Note): Boolean {
@@ -22,36 +25,64 @@ class NotesAdapter : ListAdapter<Note, NotesAdapter.NoteHolder>(DIFF_CALLBACK) {
                 override fun areContentsTheSame(oldItem: Note, newItem: Note): Boolean {
                     return oldItem.title == newItem.title &&
                             oldItem.description == newItem.description &&
-                            oldItem.updatedDate == newItem.updatedDate
+                            oldItem.updatedDate == newItem.updatedDate &&
+                            oldItem.isChecked == newItem.isChecked
+
                 }
             }
     }
 
-    class NoteHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class NoteHolder(itemView: View, var onNoteListener: OnNoteListener) :
+        RecyclerView.ViewHolder(itemView), View.OnLongClickListener, View.OnClickListener {
+
+        var isChecked = false
         fun bind(currentNote: Note) {
             itemView.text_view_title.text = currentNote.title
             itemView.text_view_description.text = currentNote.description
             itemView.text_view_last_changed_date.text = currentNote.updatedDate
-            itemView.setOnClickListener {
-                val editNoteIntent = Intent(itemView.context, AddEditNoteActivity::class.java)
-                editNoteIntent.putExtra("MODE", IntentCodes.INFO)
-                editNoteIntent.putExtra("TITLE", currentNote.title)
-                editNoteIntent.putExtra("DESCRIPTION", currentNote.description)
-                editNoteIntent.putExtra("IMAGE", currentNote.imageUri)
-                editNoteIntent.putExtra("CREATED_DATE", currentNote.createdDate)
-                editNoteIntent.putExtra("UPDATED_DATE", currentNote.updatedDate)
-                editNoteIntent.putExtra("ID", currentNote.id)
 
-                itemView.context.startActivity(editNoteIntent)
+            itemView.checkbox.isChecked = isChecked||currentNote.isChecked
+
+            if (checkboxesVisible) {
+                itemView.checkbox.visibility = View.VISIBLE
+            } else {
+                itemView.checkbox.visibility = View.INVISIBLE
             }
 
+            itemView.setOnClickListener(this)
+            itemView.setOnLongClickListener(this)
+        }
+
+        override fun onLongClick(v: View?): Boolean {
+            onNoteListener.onLongClick(adapterPosition)
+            checkboxesVisible = true
+            isChecked = true
+            return true
+        }
+
+        override fun onClick(v: View?) {
+            onNoteListener.onClick(adapterPosition)
+        }
+
+    }
+
+    fun checkAll(areChecked: Boolean) {
+        if (areChecked) {
+            currentList.forEach {
+                it.isChecked = true
+            }
+        } else {
+            currentList.forEach {
+                it.isChecked = false
+            }
+            checkboxesVisible = false
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteHolder {
         val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.note_item, parent, false)
-        return NoteHolder(itemView)
+        return NoteHolder(itemView, onNoteListener)
     }
 
     override fun onBindViewHolder(holder: NoteHolder, position: Int) {
@@ -59,5 +90,8 @@ class NotesAdapter : ListAdapter<Note, NotesAdapter.NoteHolder>(DIFF_CALLBACK) {
         holder.bind(currentNote)
     }
 
-
+    interface OnNoteListener {
+        fun onLongClick(position: Int)
+        fun onClick(position: Int)
+    }
 }
