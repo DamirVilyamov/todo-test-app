@@ -63,7 +63,7 @@ class AddEditNoteActivity : AppCompatActivity() {
 
         when (MODE) {
             IntentCodes.ADD -> {
-
+                activateEditMode(true)
             }
             IntentCodes.INFO -> {
                 title = intent.getStringExtra("TITLE")
@@ -122,6 +122,10 @@ class AddEditNoteActivity : AppCompatActivity() {
             }
             R.id.save_note -> {
                 currentNote = getNote()
+                if (currentNote.title.isBlank() || currentNote.title.isEmpty()) {
+                    Toast.makeText(this, "Title must not be blank", Toast.LENGTH_SHORT).show()
+                    return true
+                }
                 Log.d(TAG, "onOptionsItemSelected: MODE = $MODE")
                 if (MODE == IntentCodes.ADD) {
                     Log.d(TAG, "onOptionsItemSelected: inserting new note ${currentNote.id}")
@@ -132,6 +136,7 @@ class AddEditNoteActivity : AppCompatActivity() {
                 }
                 activateEditMode(false)
                 Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show()
+                finish()
                 return true
             }
         }
