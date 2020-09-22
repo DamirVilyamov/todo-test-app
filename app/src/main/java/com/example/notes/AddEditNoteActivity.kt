@@ -1,6 +1,9 @@
 package com.example.notes
 
+
+
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
@@ -11,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_add_edit_note.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -80,13 +84,25 @@ class AddEditNoteActivity : AppCompatActivity() {
         }
     }
 
+
+
     private fun displayNoteInfo(note: Note) {
         edit_text_title.setText(note.title, TextView.BufferType.EDITABLE)
         edit_text_description.setText(note.description, TextView.BufferType.EDITABLE)
         text_view_created.text = "Created: " + note.createdDate
         text_view_updated.text = "Updated: " + note.updatedDate
-        Log.d(TAG, "displayNoteInfo: showing image: ${note.imageUri}")
-        note_image.setImageURI(note.imageUri?.toUri())
+        Log.d(TAG, "displayNoteInfo: showing image: ${note.imageUri?.toUri()}")
+        //note_image.setImageURI(note.imageUri?.toUri())
+
+        /*try {
+            val inputStream = contentResolver.openInputStream(note.imageUri!!.toUri())
+            val drawable = Drawable.createFromStream(inputStream, null)
+            note_image.setImageDrawable(drawable)
+        } catch (exception: FileNotFoundException){
+            Log.d(TAG, "displayNoteInfo: file not found")
+        }*/
+
+        Glide.with(this).load(uri).into(note_image)
     }
 
 
@@ -98,7 +114,7 @@ class AddEditNoteActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.add_edit_menu, menu);
-        return true;
+        return true
     }
 
     private fun activateEditMode(isActive: Boolean) {
